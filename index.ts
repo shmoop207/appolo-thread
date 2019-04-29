@@ -1,5 +1,5 @@
 
 import {Pool} from "./lib/pool"
-import {Worker} from "./lib/Worker"
+import {Worker} from "./lib/worker"
 
 export {Pool,Worker}
