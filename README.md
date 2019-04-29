@@ -9,7 +9,7 @@ Thread Pool using node [worker_threads](https://nodejs.org/api/worker_threads.ht
 npm install appolo-thread --save
 ```
 
-### Usage
+## Usage
 ```typescript
 import { Pool } from 'appolo-thread';
 
@@ -21,7 +21,7 @@ async function test() {
   
     await pool.initialize();
    
-    let const = await pool.run(50);
+    let result = await pool.run(50);
 }
 ```
 
@@ -75,7 +75,24 @@ await pool.initialize();
 
 ```
 
-### run
+you can also implement worker initialize method.\
+the method will be called on pool `initialize`
+```typescript
+import { Worker } from 'appolo-thread';
+export class Fibonacci extends Worker {
+    
+    async initialize(){
+        //do something
+    }
+    
+    async run(num: number) {
+        //...
+    }
+}
+
+```
+
+### Run
 run worker with custom params.
 return promise with the worker result
 
@@ -89,6 +106,52 @@ await pool.initialize();
 
 let reuslt = await pool.run({some:"value"})
 ```
+
+### Message event
+The `message` event is emitted from the worker using the worker `postMessage` method
+
+```javascript
+const pool = new Pool({
+    path:'./workers/fibonacci.js', 
+    threads: 2,
+});
+
+await pool.initialize();
+
+pool.on("message",function(data) {
+   console.log(data) // some message
+})
+
+```
+post message in worker class
+```typescript
+import { Worker } from 'appolo-thread';
+export class Fibonacci extends Worker {
+    
+    async initialize(){
+       this.postMessage("some message")
+    }
+    
+    async run(num: number) {
+        //...
+    }
+}
+
+```
+### Uncaught event
+The `error` event is emitted if the worker thread throws an uncaught exception.
+```javascript
+const pool = new Pool({
+    path:'./workers/fibonacci.js', 
+    threads: 2,
+});
+
+await pool.initialize();
+
+pool.on("error",function(e) {
+   console.log(e) 
+})
+````
 
 
 ## License

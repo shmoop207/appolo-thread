@@ -1,24 +1,24 @@
 import {Worker} from 'worker_threads';
 import {EventDispatcher, IEventOptions} from "appolo-event-dispatcher";
 import {Thread} from "./thread";
+import {Deferred} from "./deferred";
 
 export class Job extends EventDispatcher {
 
 
     private _thread: Thread;
 
-    private _resolve: (result: any) => void;
-    private _reject: (e: Error) => void;
+    private _deferred: Deferred<any>;
 
     constructor(private _data: any) {
         super();
     }
 
-    public inQueue() {
-        return new Promise((resolve, reject) => {
-            this._resolve = resolve;
-            this._reject = reject;
-        })
+    public inQueue(): Promise<any> {
+
+        this._deferred = new Deferred();
+
+        return this._deferred.promise
     }
 
     public set thread(value: Thread) {
@@ -29,22 +29,21 @@ export class Job extends EventDispatcher {
 
         try {
             let result = await this._thread.run(this._data);
-            this._resolve(result)
+            this._deferred.resolve(result)
         } catch (e) {
-            this._reject(e);
+            this._deferred.reject(e);
         } finally {
             this._clean();
         }
     }
 
     private _clean() {
-        this._resolve = null;
-        this._reject = null;
+        this._deferred = null;
         this._thread = null;
     }
 
     public destroy() {
-        this._reject && this._reject(new Error("job destroyed"));
+        this._deferred && this._deferred.reject(new Error("job destroyed"));
         this._clean();
     }
 

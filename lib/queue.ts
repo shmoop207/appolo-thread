@@ -16,7 +16,7 @@ export class Queue {
         return this._jobs.length
     }
 
-    public pull() {
+    public shift() {
         return this._jobs.shift();
     }
 

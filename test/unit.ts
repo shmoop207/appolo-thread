@@ -18,7 +18,14 @@ describe("Pool", function () {
 
         await pool.initialize();
 
+        let spy = sinon.spy();
+
+        pool.on("message", spy);
+
         let result = await pool.run(50);
+
+        spy.should.have.been.calledOnce;
+        spy.getCall(0).args[0].should.be.eq("working");
 
         result.should.be.eq(20365011074);
 

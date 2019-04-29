@@ -10,6 +10,7 @@ class Fibonacci extends worker_1.Worker {
             b = temp;
             num--;
         }
+        this.postMessage("working");
         return b;
     }
 }

@@ -41,6 +41,7 @@ export class Pool<T, K> extends EventDispatcher {
         let thread = new Thread({path: this.options.path, workerData: this.options.workerData});
 
         thread.once("error", this._onError, this);
+        thread.bubble("message", this);
 
         await thread.initialize();
 
@@ -62,7 +63,7 @@ export class Pool<T, K> extends EventDispatcher {
 
         let thread = this._threads.shift();
 
-        let job = this._queue.pull();
+        let job = this._queue.shift();
 
         job.thread = thread;
 
@@ -85,6 +86,7 @@ export class Pool<T, K> extends EventDispatcher {
     }
 
     public destroy() {
+        this.removeAllListeners();
         setImmediate(() => {
             this._queue.destroy();
 

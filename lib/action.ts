@@ -4,7 +4,8 @@ export enum Action {
     InitFail,
     Run,
     RunSuccess,
-    RunFail
+    RunFail,
+    Message
 }
 
 

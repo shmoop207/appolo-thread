@@ -10,6 +10,8 @@ export class Fibonacci extends Worker {
             num--;
         }
 
+        this.postMessage("working");
+
         return b;
     }
 }

@@ -3,6 +3,8 @@ import {Action, MessageData} from "./action";
 import {Worker} from "./worker";
 import * as _ from "lodash";
 
+type WorkerCtr = (new(workerData: any,port:MessagePort) => Worker)
+
 class Runner {
 
     private _port: MessagePort;
@@ -23,13 +25,13 @@ class Runner {
 
             let required = require(path);
 
-            let WorkerCtr = _.find<(new(workerData: any) => Worker)>(required, (value) => Worker.isPrototypeOf(value));
+            let WorkerCtr = _.find<WorkerCtr>(required, (value) => Worker.isPrototypeOf(value));
 
             if (!WorkerCtr) {
                 throw new Error(`failed to find thread constructor at path ${path}`)
             }
 
-            this._worker = new WorkerCtr(workerData);
+            this._worker = new WorkerCtr(workerData,this._port);
 
             await this._worker.initialize();
 

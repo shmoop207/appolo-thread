@@ -11,7 +11,11 @@ describe("Pool", function () {
     it('should call thread', async () => {
         const pool = new index_1.Pool({ path: path.join(__dirname, './workers/fibonacci.js'), threads: 1 });
         await pool.initialize();
+        let spy = sinon.spy();
+        pool.on("message", spy);
         let result = await pool.run(50);
+        spy.should.have.been.calledOnce;
+        spy.getCall(0).args[0].should.be.eq("working");
         result.should.be.eq(20365011074);
         let result2 = await pool.run(25);
         result2.should.be.eq(121393);
