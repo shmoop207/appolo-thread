@@ -21,7 +21,7 @@ export class Queue {
     }
 
     public destroy() {
-        _.forEach(this._jobs, job => job.destory());
+        _.forEach(this._jobs, job => job.destroy());
         this._jobs.length = 0;
 
     }

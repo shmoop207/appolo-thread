@@ -84,12 +84,14 @@ export class Pool<T, K> extends EventDispatcher {
         return promise;
     }
 
-    public destory() {
+    public destroy() {
+        setImmediate(() => {
+            this._queue.destroy();
 
-        this._queue.destroy();
+            _.forEach(this._threads, thread => thread.destroy());
 
-        _.forEach(this._threads, thread => thread.destroy());
-
-        this._threads.length = 0;
+            this._threads.length = 0;
+        })
     }
+
 }

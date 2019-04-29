@@ -43,7 +43,7 @@ export class Job extends EventDispatcher {
         this._thread = null;
     }
 
-    public destory() {
+    public destroy() {
         this._reject && this._reject(new Error("job destroyed"));
         this._clean();
     }

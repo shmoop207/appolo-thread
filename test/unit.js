@@ -15,7 +15,7 @@ describe("Pool", function () {
         result.should.be.eq(20365011074);
         let result2 = await pool.run(25);
         result2.should.be.eq(121393);
-        pool.destory();
+        pool.destroy();
     });
     it('should call multi thread', async () => {
         const pool = new index_1.Pool({ path: path.join(__dirname, './workers/fibonacci.js'), threads: 2 });
@@ -23,7 +23,7 @@ describe("Pool", function () {
         let [result1, result2] = await Promise.all([pool.run(50), pool.run(30)]);
         result1.should.be.eq(20365011074);
         result2.should.be.eq(1346269);
-        pool.destory();
+        pool.destroy();
     });
     it('should call multi thread above limit', async () => {
         const pool = new index_1.Pool({ path: path.join(__dirname, './workers/fibonacci.js'), threads: 2 });
@@ -32,7 +32,7 @@ describe("Pool", function () {
         result1.should.be.eq(20365011074);
         result2.should.be.eq(1346269);
         result3.should.be.eq(8);
-        pool.destory();
+        pool.destroy();
     });
     it('should call thread and throw error', async () => {
         const pool = new index_1.Pool({ path: path.join(__dirname, './workers/fibonacciError.js'), threads: 1 });
@@ -43,7 +43,7 @@ describe("Pool", function () {
         catch (e) {
             e.message.should.include("Error: test");
         }
-        pool.destory();
+        pool.destroy();
     });
     it('should call thread and exit thread', async () => {
         const pool = new index_1.Pool({ path: path.join(__dirname, './workers/fibonacciExit.js'), threads: 1 });
@@ -60,7 +60,7 @@ describe("Pool", function () {
             spy.should.have.been.called;
             pool.numOfThreads.should.be.eq(1);
         }
-        pool.destory();
+        pool.destroy();
     });
 });
 //# sourceMappingURL=unit.js.map

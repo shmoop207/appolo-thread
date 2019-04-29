@@ -140,11 +140,13 @@ export class Thread extends EventDispatcher {
             this._clean();
             this.removeAllListeners();
             this._worker.removeAllListeners();
-            this._worker.terminate();
             this._port.removeAllListeners();
             this._port.close();
+            this._worker.terminate();
+
 
             this._worker = null;
+            this._port = null;
         } catch (e) {
 
         }

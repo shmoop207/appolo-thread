@@ -26,7 +26,7 @@ describe("Pool", function () {
 
         result2.should.be.eq(121393);
 
-        pool.destory()
+        pool.destroy()
 
 
     });
@@ -42,7 +42,7 @@ describe("Pool", function () {
 
         result1.should.be.eq(20365011074);
         result2.should.be.eq(1346269)
-        pool.destory()
+        pool.destroy()
 
 
     });
@@ -57,7 +57,7 @@ describe("Pool", function () {
         result1.should.be.eq(20365011074);
         result2.should.be.eq(1346269);
         result3.should.be.eq(8)
-        pool.destory()
+        pool.destroy()
 
 
     });
@@ -72,7 +72,7 @@ describe("Pool", function () {
         } catch (e) {
             e.message.should.include("Error: test")
         }
-        pool.destory()
+        pool.destroy()
 
 
     });
@@ -96,7 +96,7 @@ describe("Pool", function () {
             pool.numOfThreads.should.be.eq(1)
 
         }
-        pool.destory()
+        pool.destroy()
 
 
     });
