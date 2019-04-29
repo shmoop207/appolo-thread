@@ -3,7 +3,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/shmoop207/appolo-thread/badge.svg)](https://snyk.io/test/github/shmoop207/appolo-thread)
 
 Thread Pool using node [worker_threads](https://nodejs.org/api/worker_threads.html)
-## Installation:
+## Installation
 
 ```javascript
 npm install appolo-thread --save
