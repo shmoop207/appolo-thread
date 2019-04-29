@@ -1,7 +1,12 @@
 {
   "name": "appolo-thread",
   "description": "thread pool",
-  "keywords": ["worker","thread","pool","worker_threads"],
+  "keywords": [
+    "worker",
+    "thread",
+    "pool",
+    "worker_threads"
+  ],
   "author": {
     "name": "Roman Svichar",
     "email": "shmoop207@gmail.com"
