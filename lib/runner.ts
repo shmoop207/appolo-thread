@@ -3,7 +3,7 @@ import {Action, MessageData} from "./action";
 import {Worker} from "./worker";
 import * as _ from "lodash";
 
-type WorkerCtr = (new(workerData: any,port:MessagePort) => Worker)
+type WorkerCtr = (new(workerData: any, port: MessagePort) => Worker)
 
 class Runner {
 
@@ -31,7 +31,7 @@ class Runner {
                 throw new Error(`failed to find thread constructor at path ${path}`)
             }
 
-            this._worker = new WorkerCtr(workerData,this._port);
+            this._worker = new WorkerCtr(workerData, this._port);
 
             await this._worker.initialize();
 
@@ -43,15 +43,15 @@ class Runner {
         }
     }
 
-    private async _run(data: any) {
+    private async _run(id: string, data: any) {
         try {
 
             let result = await this._worker.run(data);
 
-            this._port.postMessage({action: Action.RunSuccess, result});
+            this._port.postMessage({id,action: Action.RunSuccess, result});
 
         } catch (e) {
-            this._port.postMessage({action: Action.RunFail, error: e.stack});
+            this._port.postMessage({id,action: Action.RunFail, error: e.stack});
         }
     }
 
@@ -64,7 +64,7 @@ class Runner {
                 break;
 
             case Action.Run:
-                this._run(msg.data);
+                this._run(msg.id, msg.data);
                 break;
         }
     }

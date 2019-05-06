@@ -1,21 +1,21 @@
 import {Worker, MessagePort, MessageChannel} from "worker_threads";
 import path = require("path");
-import {Action, MessageData} from "./action";
+import {Action, MessageAction, MessageData, RunAction} from "./action";
 import {EventDispatcher} from "appolo-event-dispatcher/lib/eventDispatcher";
 import {Deferred} from "./deferred";
+import {Events} from "./interfaces";
 
 export class Thread extends EventDispatcher {
 
     private _port: MessagePort;
     private _initDeferred: Deferred<any>;
 
-    private _runDeferred: Deferred<any>;
-
-    private _isRunning: boolean;
     private _isTerminated: boolean = false;
     private _isInitialized: boolean = false;
 
     private _worker: Worker;
+
+    private _runningJobs: number = 0;
 
     constructor(private options: { path: string, workerData: any }) {
         super();
@@ -53,11 +53,7 @@ export class Thread extends EventDispatcher {
             this._initDeferred.reject(e);
         }
 
-        if (this._runDeferred) {
-            this._runDeferred.reject(e)
-        }
-
-        this.fireEvent('error', e, this);
+        this.fireEvent(Events.Error, e, this);
 
         this.destroy();
     };
@@ -75,17 +71,19 @@ export class Thread extends EventDispatcher {
                 this._onInitFail(msg);
                 break;
             case Action.RunSuccess:
-                this._onRunSuccess(msg);
-                break;
             case Action.RunFail:
-                this._onRunFail(msg);
+                this._runningJobs--;
+                this.fireEvent(Events.Run, (msg as RunAction));
                 break;
-
             case Action.Message:
-                this.fireEvent("message", msg.data);
+                this.fireEvent(Events.Message, (msg as MessageAction).data);
                 break;
         }
     };
+
+    public get runningJobs(): number {
+        return this._runningJobs;
+    }
 
     public get isTerminated(): boolean {
         return this._isTerminated
@@ -112,44 +110,21 @@ export class Thread extends EventDispatcher {
 
     }
 
-    private _onRunSuccess(data: MessageData) {
-        if (!this._runDeferred) {
-            return;
-        }
 
-        this._runDeferred.resolve(data.result);
-        this._clean();
-
-    }
-
-    private _onRunFail(data: MessageData) {
-        if (!this._runDeferred) {
-            return;
-        }
-
-        this._runDeferred.reject(new Error(data.error));
-        this._clean();
-
-    }
-
-    public run(data: any): Promise<any> {
-        this._runDeferred = new Deferred();
-
-        this._port.postMessage({action: Action.Run, data});
-
-        return this._runDeferred.promise;
+    public run(id: string, data: any): void {
+        this._runningJobs++;
+        this._port.postMessage({action: Action.Run, id, data});
     }
 
     private _clean() {
         this._initDeferred = null;
-        this._runDeferred = null;
-        this._isRunning = false;
     }
 
     public destroy() {
         try {
+            this._runningJobs = 0;
             this._isTerminated = true;
-            this._runDeferred && this._runDeferred.reject(new Error("worker destroyed"));
+            this.fireEvent(Events.Destroyed);
 
             this._clean();
             this.removeAllListeners();

@@ -19,7 +19,7 @@
     "test": "mocha test --exit"
   },
   "main": "./index.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,8 +28,10 @@
   "readme": "",
   "readmeFilename": "README.md",
   "dependencies": {
+    "@types/uuid": "^3.4.4",
     "appolo-event-dispatcher": "^6.0.8",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/benchmark": "^1.0.31",

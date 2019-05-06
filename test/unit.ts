@@ -48,7 +48,7 @@ describe("Pool", function () {
         let [result1, result2] = await Promise.all([pool.run(50), pool.run(30)]);
 
         result1.should.be.eq(20365011074);
-        result2.should.be.eq(1346269)
+        result2.should.be.eq(1346269);
         pool.destroy()
 
 

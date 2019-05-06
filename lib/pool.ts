@@ -2,15 +2,18 @@ import {EventDispatcher} from "appolo-event-dispatcher";
 import {Thread} from "./thread";
 import {Queue} from "./queue";
 import _ = require("lodash");
+import {Events, IOptions} from "./interfaces";
 
 export class Pool<T, K> extends EventDispatcher {
 
     private _threads: Thread[] = [];
     private _queue: Queue;
 
-    constructor(private options: { path: string, threads: number, workerData?: any }) {
+    constructor(private readonly options: IOptions) {
 
         super();
+
+        this.options = _.defaults(this.options, {maxThreadJobs: Number.MAX_SAFE_INTEGER});
 
         this._queue = new Queue();
     }
@@ -40,8 +43,8 @@ export class Pool<T, K> extends EventDispatcher {
 
         let thread = new Thread({path: this.options.path, workerData: this.options.workerData});
 
-        thread.once("error", this._onError, this);
-        thread.bubble("message", this);
+        thread.once(Events.Error, this._onError, this);
+        thread.bubble(Events.Message, this);
 
         await thread.initialize();
 
@@ -51,9 +54,9 @@ export class Pool<T, K> extends EventDispatcher {
     private _onError(e: Error, thread: Thread) {
         _.remove(this._threads, item => item === thread);
 
-        this._createThread().catch(e => this.fireEvent("error", e));
+        this._createThread().catch(e => this.fireEvent(Events.Error, e));
 
-        this.fireEvent("error", e);
+        this.fireEvent(Events.Error, e);
     }
 
     private async _checkForJob() {
@@ -61,17 +64,20 @@ export class Pool<T, K> extends EventDispatcher {
             return;
         }
 
-        let thread = this._threads.shift();
+
+        let threads = _.sortBy(this._threads, (thread) => thread.runningJobs);
+
+        let thread = threads[0];
+
+        if (thread.runningJobs > this.options.maxThreadJobs) {
+            return;
+        }
 
         let job = this._queue.shift();
 
         job.thread = thread;
 
         await job.run();
-
-        if (!thread.isTerminated) {
-            this._threads.push(thread)
-        }
 
         this._checkForJob();
     }
