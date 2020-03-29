@@ -1,8 +1,8 @@
 import {EventDispatcher} from "appolo-event-dispatcher";
 import {Thread} from "./thread";
 import {Queue} from "./queue";
-import _ = require("lodash");
 import {Events, IOptions} from "./interfaces";
+import {Objects, Arrays} from "appolo-utils";
 
 export class Pool<T, K> extends EventDispatcher {
 
@@ -13,7 +13,7 @@ export class Pool<T, K> extends EventDispatcher {
 
         super();
 
-        this.options = _.defaults(this.options, {maxThreadJobs: Number.MAX_SAFE_INTEGER});
+        this.options = Objects.defaults<IOptions>(this.options, {maxThreadJobs: Number.MAX_SAFE_INTEGER});
 
         this._queue = new Queue();
     }
@@ -52,7 +52,7 @@ export class Pool<T, K> extends EventDispatcher {
     }
 
     private _onError(e: Error, thread: Thread) {
-        _.remove(this._threads, item => item === thread);
+        Arrays.removeBy(this._threads, item => item === thread);
 
         this._createThread().catch(e => this.fireEvent(Events.Error, e));
 
@@ -65,7 +65,7 @@ export class Pool<T, K> extends EventDispatcher {
         }
 
 
-        let threads = _.sortBy(this._threads, (thread) => thread.runningJobs);
+        let threads = Arrays.sortBy(this._threads, (thread) => thread.runningJobs);
 
         let thread = threads[0];
 
@@ -96,7 +96,7 @@ export class Pool<T, K> extends EventDispatcher {
         setImmediate(() => {
             this._queue.destroy();
 
-            _.forEach(this._threads, thread => thread.destroy());
+            this._threads.forEach(thread => thread.destroy());
 
             this._threads.length = 0;
         })

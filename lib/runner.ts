@@ -1,7 +1,6 @@
 import {parentPort, MessagePort, workerData} from "worker_threads";
 import {Action, MessageData} from "./action";
 import {Worker} from "./worker";
-import * as _ from "lodash";
 
 type WorkerCtr = (new(workerData: any, port: MessagePort) => Worker)
 
@@ -25,7 +24,9 @@ class Runner {
 
             let required = require(path);
 
-            let WorkerCtr = _.find<WorkerCtr>(required, (value) => Worker.isPrototypeOf(value));
+            let requiredKey = Object.keys(required || {}).find((key) => Worker.isPrototypeOf(required[key]));
+
+            let WorkerCtr = required[requiredKey];
 
             if (!WorkerCtr) {
                 throw new Error(`failed to find thread constructor at path ${path}`)
@@ -48,10 +49,10 @@ class Runner {
 
             let result = await this._worker.run(data);
 
-            this._port.postMessage({id,action: Action.RunSuccess, result});
+            this._port.postMessage({id, action: Action.RunSuccess, result});
 
         } catch (e) {
-            this._port.postMessage({id,action: Action.RunFail, error: e.stack});
+            this._port.postMessage({id, action: Action.RunFail, error: e.stack});
         }
     }
 

@@ -1,5 +1,4 @@
 import {Job} from "./job";
-import _ = require("lodash");
 
 export class Queue {
     private _jobs: Job[] = [];
@@ -21,7 +20,7 @@ export class Queue {
     }
 
     public destroy() {
-        _.forEach(this._jobs, job => job.destroy());
+        (this._jobs || []).forEach(job => job.destroy());
         this._jobs.length = 0;
 
     }

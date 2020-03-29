@@ -2,7 +2,7 @@ import {EventDispatcher} from "appolo-event-dispatcher";
 import {Thread} from "./thread";
 import {Deferred} from "./deferred";
 import {Action, RunAction} from "./action";
-import uuid = require('uuid');
+import {Guid} from 'appolo-utils';
 import {Events} from "./interfaces";
 
 export class Job extends EventDispatcher {
@@ -16,7 +16,7 @@ export class Job extends EventDispatcher {
     constructor(private _data: any) {
         super();
 
-        this._id = uuid.v4();
+        this._id = Guid.guid();
     }
 
     public inQueue(): Promise<any> {

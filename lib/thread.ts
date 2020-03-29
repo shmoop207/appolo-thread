@@ -1,7 +1,7 @@
 import {Worker, MessagePort, MessageChannel} from "worker_threads";
 import path = require("path");
 import {Action, MessageAction, MessageData, RunAction} from "./action";
-import {EventDispatcher} from "appolo-event-dispatcher/lib/eventDispatcher";
+import {EventDispatcher} from "appolo-event-dispatcher";
 import {Deferred} from "./deferred";
 import {Events} from "./interfaces";
 
