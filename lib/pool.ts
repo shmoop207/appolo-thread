@@ -1,8 +1,8 @@
-import {EventDispatcher} from "appolo-event-dispatcher";
+import {EventDispatcher} from "@appolo/events";
 import {Thread} from "./thread";
 import {Queue} from "./queue";
 import {Events, IOptions} from "./interfaces";
-import {Objects, Arrays} from "appolo-utils";
+import {Objects, Arrays} from "@appolo/utils";
 
 export class Pool<T, K> extends EventDispatcher {
 

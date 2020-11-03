@@ -1,8 +1,8 @@
-import {EventDispatcher} from "appolo-event-dispatcher";
+import {EventDispatcher} from "@appolo/events";
 import {Thread} from "./thread";
 import {Deferred} from "./deferred";
 import {Action, RunAction} from "./action";
-import {Guid} from 'appolo-utils';
+import {Guid} from '@appolo/utils';
 import {Events} from "./interfaces";
 
 export class Job extends EventDispatcher {
